@@ -1,7 +1,33 @@
+"use client"
+
+import {useEffect, useState} from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
 
+type Leaderboard = {
+  id: number;
+  name: string;
+  score: number;
+}
+
 export default function Home() {
+  const [data, setData] = useState();
+  const [leaderboard, setLeaderboard] = useState<Leaderboard[]>([]);
+
+  useEffect(() => {
+    fetch('/api/auth/test')
+      .then((res) => res.json())
+      .then((res) => {
+        setData(res?.data || 'Data from a client');
+      })
+
+    fetch('/api/auth/leaderboard')
+      .then((res) => res.json())
+      .then((res) => {
+        setLeaderboard(res?.data || []);
+      })
+
+  }, [])
   return (
     <main className={styles.main}>
       <h1 className={styles.title}>Shoot Childrens Scares</h1>
@@ -35,6 +61,10 @@ export default function Home() {
         >
           Войти в аккаунт
         </Link>
+
+        {data && <div>Data: {data}</div>}
+
+        {leaderboard.map(item => <div>{item.name} - {item.score}</div>)}
       </div>
     </main>
   );
